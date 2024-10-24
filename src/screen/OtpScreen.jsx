@@ -37,6 +37,9 @@ const OtpScreen = ({navigation}) => {
   const email = useSelector(
     state => state.rootReducer.authSlice.data.user.email,
   );
+  const company = useSelector(
+    state => state.rootReducer.authSlice.data.user.company,
+  );
   const loading = useSelector(state => state.rootReducer.authSlice.loading);
 
   const {
@@ -55,6 +58,7 @@ const OtpScreen = ({navigation}) => {
     const info = {
       otp: otpCode,
       email: email,
+      company: company,
     };
     const formData = new FormData();
     Object.keys(info).forEach(key => {
@@ -71,6 +75,7 @@ const OtpScreen = ({navigation}) => {
           text1: data.payload['SUCCESS']?.message,
           visibilityTime: 2000,
         });
+        navigation.navigate('ASSIGNLOADPLAN');
       } else {
         Toast.show({
           type: 'error',

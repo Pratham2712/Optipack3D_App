@@ -35,7 +35,8 @@ const HomeScreen = ({navigation}) => {
             color: colors.white,
           }}
           onPress={() => {
-            navigation.navigate('REGISTER');
+            navigation.navigate('ASSIGNLOADPLAN');
+            // navigation.navigate('REGISTER');
           }}
         />
       </View>
