@@ -9,6 +9,7 @@ import LoginScreen from './screen/LoginScreen';
 import OtpScreen from './screen/OtpScreen';
 import AssignLoadplanScreen from './screen/AssignLoadplanScreen';
 import OrderScreen from './screen/OrderScreen';
+import VisualizeScreen from './screen/VisualizeScreen';
 
 const Route = () => {
   const dispatch = useDispatch();
@@ -29,6 +30,7 @@ const Route = () => {
             component={AssignLoadplanScreen}
           />
           <Stack.Screen name="ORDERDETAILS" component={OrderScreen} />
+          <Stack.Screen name="VISUALIZE" component={VisualizeScreen} />
         </Stack.Navigator>
       </NavigationContainer>
       <Toast />

@@ -74,24 +74,24 @@ export const checkLoginThunk = createAsyncThunk(
     }
   },
 );
-export const getAllLoadplan = createAsyncThunk(
-  '/get_loadplan_loaders',
-  async () => {
-    try {
-      const token = await AsyncStorage.getItem('token');
-      const res = await axios.get(`${BASE_URL}/get_loadplan_loaders`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
+// export const getAllLoadplan = createAsyncThunk(
+//   '/get_loadplan_loaders',
+//   async () => {
+//     try {
+//       const token = await AsyncStorage.getItem('token');
+//       const res = await axios.get(`${BASE_URL}/get_loadplan_loaders`, {
+//         headers: {
+//           'Content-Type': 'application/json',
+//           Authorization: `Bearer ${token}`,
+//         },
+//       });
 
-      return res.data;
-    } catch (error) {
-      return error.response.data;
-    }
-  },
-);
+//       return res.data;
+//     } catch (error) {
+//       return error.response.data;
+//     }
+//   },
+// );
 
 const initialState = {
   loading: false,
@@ -253,41 +253,41 @@ const authSlice = createSlice({
         state.loading = false;
         state.initialLoad = false;
         state.errorData.message = action.error.message;
-      })
-      //getAllLoadplan===================================================================================
-      .addCase(getAllLoadplan.pending, (state, {payload}) => {
-        state.loading = true;
-      })
-      .addCase(getAllLoadplan.fulfilled, (state, {payload}) => {
-        console.log('promist', Object.keys(payload)[0]);
-
-        switch (Object.keys(payload)?.[0]) {
-          case SUCCESS:
-            state.successMsg = '';
-            state.loading = false;
-            console.log(payload[SUCCESS].result, 'inside');
-
-            state.successMsg = payload[SUCCESS]?.message;
-            state.data.loadplans = payload[SUCCESS]?.result;
-            state.errorData.message = '';
-            break;
-          case ERROR:
-            state.errorData.message = '';
-            state.loading = false;
-
-            state.errorData.message = payload[ERROR];
-            state.successMsg = '';
-
-            break;
-          default:
-            break;
-        }
-      })
-      .addCase(getAllLoadplan.rejected, (state, action) => {
-        state.status.getAllLoadplan = ERROR;
-        state.loading = false;
-        state.errorData.message = action.error.message;
       });
+    // //getAllLoadplan===================================================================================
+    // .addCase(getAllLoadplan.pending, (state, {payload}) => {
+    //   state.loading = true;
+    // })
+    // .addCase(getAllLoadplan.fulfilled, (state, {payload}) => {
+    //   console.log('promist', Object.keys(payload)[0]);
+
+    //   switch (Object.keys(payload)?.[0]) {
+    //     case SUCCESS:
+    //       state.successMsg = '';
+    //       state.loading = false;
+    //       console.log(payload[SUCCESS].result, 'inside');
+
+    //       state.successMsg = payload[SUCCESS]?.message;
+    //       state.data.loadplans = payload[SUCCESS]?.result;
+    //       state.errorData.message = '';
+    //       break;
+    //     case ERROR:
+    //       state.errorData.message = '';
+    //       state.loading = false;
+
+    //       state.errorData.message = payload[ERROR];
+    //       state.successMsg = '';
+
+    //       break;
+    //     default:
+    //       break;
+    //   }
+    // })
+    // .addCase(getAllLoadplan.rejected, (state, action) => {
+    //   state.status.getAllLoadplan = ERROR;
+    //   state.loading = false;
+    //   state.errorData.message = action.error.message;
+    // });
   },
 });
 

@@ -1,13 +1,80 @@
 import {FlatList, StyleSheet, Text, View} from 'react-native';
-import React from 'react';
-import {useSelector} from 'react-redux';
+import React, {useEffect, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
 import Button from '../components/Button';
 import {colors} from '../constants/colors';
+import {getContainerThunk} from '../redux/Slices/mainSlice';
 
-const OrderScreen = () => {
+const OrderScreen = ({route, navigation}) => {
+  const {plan_id} = route.params;
+  const dispatch = useDispatch();
+
+  const [col, setCol] = useState([
+    'rgba(244, 67, 54, 1)', // Color 1
+    'rgba(76, 175, 80, 1)', // Color 2
+    'rgba(33, 150, 243, 1)', // Color 3
+    'rgba(255, 181, 181,1)',
+    'rgba(255, 111, 60,1)',
+    'rgba(247, 7, 118,1)',
+    'rgba(239, 213, 16,1)',
+  ]);
+
+  //useSeclector==========================================================================
   const orderData = useSelector(
     state => state.rootReducer.mainSlice.data.orderData,
   );
+
+  //function ================================================================================
+  const finalObject = (input, containerData) => {
+    // Initialize the output object
+    const output = {
+      numTypes: input.length,
+      totalContainers: containerData.length,
+      sumContainers: 0,
+    };
+
+    // Loop through each SKU and populate the output object
+    input.forEach((sku, index) => {
+      // Add SKU name and related properties to the output
+      output[`sku${index}`] = sku.sku_name; // SKU name
+      output[`grossWeight${index}`] = sku.gross_weight; // Gross weight
+      output[`length${index}`] = sku.length; // Length
+      output[`width${index}`] = sku.width; // Width
+      output[`height${index}`] = sku.height; // Height
+      output[`numberOfCases${index}`] = sku.quantity; // Quantity
+      output[`volume${index}`] = sku.volume; // Volume
+      output[`netWeight${index}`] = sku.netWeight; // Net weight
+      output[`rotationAllowed${index}`] = sku.rotationAllowed ? 'on' : 'off'; // Rotation allowed
+
+      // Add color if available
+      if (col[index]) {
+        output[`color${index}`] = col[index]; // Color
+      }
+    });
+
+    Object.keys(containerData).forEach((ele, ind) => {
+      output[`containerType${ind}`] = ele;
+      output[`numContainers${ind}`] = containerData[ele];
+      output['sumContainers'] += parseInt(containerData[ele]);
+    });
+
+    return output;
+  };
+
+  //useEffect=================================================================================
+  useEffect(() => {
+    const data = {
+      plan_id: plan_id,
+    };
+    dispatch(getContainerThunk(data)).then(data => {
+      if (data.payload['SUCCESS']) {
+        const result = data.payload['SUCCESS']?.result;
+        let skuArray = [];
+        skuArray = Object.values(orderData).flat();
+        const final = finalObject(skuArray, result);
+      }
+    });
+  }, []);
 
   const renderSkuItem = ({item}) => (
     <View style={styles.tableRow}>
@@ -18,7 +85,7 @@ const OrderScreen = () => {
       <Text style={styles.cell}>{item.length}</Text>
       <Text style={styles.cell}>{item.width}</Text>
       <Text style={styles.cell}>{item.height}</Text>
-      <Text style={styles.cell}>{item.tilt_allowed ? 'Yes' : 'No'}</Text>
+      <Text style={styles.cell}>{item.rotationAllowed ? 'Yes' : 'No'}</Text>
     </View>
   );
 
@@ -50,9 +117,10 @@ const OrderScreen = () => {
         renderOrder(orderNumber, orderData[orderNumber]),
       )}
       <Button
-        text={'Visulize'}
+        text={'visualize'}
         buttonStyle={{width: '40%', alignSelf: 'center'}}
         textStyle={{color: colors.white}}
+        onPress={() => navigation.navigate('VISUALIZE')}
       />
     </View>
   );

@@ -33,8 +33,24 @@ export const getOrderThunk = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(res.data);
 
+      return res.data;
+    } catch (error) {
+      return error.response.data;
+    }
+  },
+);
+export const getContainerThunk = createAsyncThunk(
+  '/get_container_details',
+  async data => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const res = await axios.post(`${BASE_URL}/get_container_details`, data, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return res.data;
     } catch (error) {
       return error.response.data;
@@ -56,6 +72,7 @@ const initialState = {
   data: {
     loadplans: [],
     orderData: {},
+    containerData: {},
   },
   status: {},
 };
@@ -126,6 +143,36 @@ const mainSlice = createSlice({
         }
       })
       .addCase(getOrderThunk.rejected, (state, action) => {
+        state.status.getOrderThunk = ERROR;
+        state.loading = false;
+        state.errorData.message = action.error.message;
+      })
+      //getContainerThunk===================================================================================
+      .addCase(getContainerThunk.pending, (state, {payload}) => {
+        state.loading = true;
+      })
+      .addCase(getContainerThunk.fulfilled, (state, {payload}) => {
+        switch (Object.keys(payload)?.[0]) {
+          case SUCCESS:
+            state.successMsg = '';
+            state.loading = false;
+            state.successMsg = payload[SUCCESS]?.message;
+            state.data.containerData = payload[SUCCESS]?.result;
+            state.errorData.message = '';
+            break;
+          case ERROR:
+            state.errorData.message = '';
+            state.loading = false;
+
+            state.errorData.message = payload[ERROR];
+            state.successMsg = '';
+
+            break;
+          default:
+            break;
+        }
+      })
+      .addCase(getContainerThunk.rejected, (state, action) => {
         state.status.getOrderThunk = ERROR;
         state.loading = false;
         state.errorData.message = action.error.message;

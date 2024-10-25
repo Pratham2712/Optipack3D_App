@@ -1,5 +1,12 @@
-import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useEffect} from 'react';
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {getAllLoadplan, getOrderThunk} from '../redux/Slices/mainSlice';
 import {checkLoginThunk} from '../redux/Slices/authSlice';
@@ -9,14 +16,16 @@ import {fontFamily} from '../constants/fonts';
 import Toast from 'react-native-toast-message';
 
 const AssignLoadplanScreen = ({navigation}) => {
+  const [currentPlanid, setCurrentPlanid] = useState(null);
   const dispatch = useDispatch();
   //useSelector ===========================================================================
   const email = useSelector(
     state => state.rootReducer.authSlice.data.user.email,
   );
   const loadplanIds = useSelector(
-    state => state.rootReducer.authSlice.data.loadplans,
+    state => state.rootReducer.mainSlice.data.loadplans,
   );
+  const loading = useSelector(state => state.rootReducer.mainSlice.loading);
 
   //function============================================================================
   function extractNameFromEmail(email) {
@@ -42,7 +51,9 @@ const AssignLoadplanScreen = ({navigation}) => {
     const data = {
       plan_id: id,
     };
+    setCurrentPlanid(id);
     dispatch(getOrderThunk(data)).then(data => {
+      setCurrentPlanid(null);
       if (data.payload['ERROR']) {
         Toast.show({
           type: 'error',
@@ -58,7 +69,7 @@ const AssignLoadplanScreen = ({navigation}) => {
           text1: `${data.payload['SUCCESS']?.message}`,
           visibilityTime: 2000,
         });
-        navigation.navigate('ORDERDETAILS');
+        navigation.navigate('ORDERDETAILS', {plan_id: id});
       }
     });
   };
@@ -78,7 +89,15 @@ const AssignLoadplanScreen = ({navigation}) => {
         </Text>
       </View>
       <View style={styles.arrow_bg}>
-        <Material name="keyboard-arrow-right" size={26} />
+        {loading && currentPlanid == item?.plan_id ? (
+          <ActivityIndicator
+            size="small"
+            color={colors.lightBlack}
+            fontSize={26}
+          />
+        ) : (
+          <Material name="keyboard-arrow-right" size={26} />
+        )}
       </View>
     </TouchableOpacity>
   );
