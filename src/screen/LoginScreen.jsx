@@ -14,6 +14,8 @@ const LoginScreen = ({navigation}) => {
   const dispatch = useDispatch();
   //useSelector ==================================================================================
   const loading = useSelector(state => state.rootReducer.authSlice.loading);
+  console.log(loading);
+
   const schema = yup.object({
     email: yup
       .string()

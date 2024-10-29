@@ -35,7 +35,12 @@ const HomeScreen = ({navigation}) => {
             color: colors.white,
           }}
           onPress={() => {
-            navigation.navigate('ASSIGNLOADPLAN');
+            navigation.navigate('MainTabs', {
+              screen: 'MAINSTACK',
+              params: {
+                screen: 'ASSIGNLOADPLAN',
+              },
+            });
             // navigation.navigate('REGISTER');
           }}
         />

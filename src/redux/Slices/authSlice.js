@@ -233,6 +233,7 @@ const authSlice = createSlice({
             state.data.user = payload[SUCCESS];
             state.errorData.message = '';
             state.isLogin = true;
+            state.loading = false;
             state.initialLoad = false;
             break;
           case ERROR:

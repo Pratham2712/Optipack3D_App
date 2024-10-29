@@ -1,5 +1,5 @@
-// export const BASE_URL = `https://api.optipack3d.com`;
-export const BASE_URL = `http://10.0.2.2:8000`;
+export const BASE_URL = `https://api.optipack3d.com`;
+// export const BASE_URL = `http://10.0.2.2:8000`;
 export const FAILURE = 'FAILURE';
 export const SUCCESS = 'SUCCESS';
 export const REGISTERED = 'REGISTERED';

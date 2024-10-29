@@ -3,10 +3,12 @@ import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import Button from '../components/Button';
 import {colors} from '../constants/colors';
-import {getContainerThunk} from '../redux/Slices/mainSlice';
+import {get3dDataThunk, getContainerThunk} from '../redux/Slices/mainSlice';
+import Toast from 'react-native-toast-message';
 
 const OrderScreen = ({route, navigation}) => {
   const {plan_id} = route.params;
+  const [final, setFinal] = useState();
   const dispatch = useDispatch();
 
   const [col, setCol] = useState([
@@ -25,11 +27,28 @@ const OrderScreen = ({route, navigation}) => {
   );
 
   //function ================================================================================
+  const get3dData = () => {
+    // const formData = new FormData();
+    // Object.keys(final)?.forEach(key => {
+    //   formData.append(key, final[key]);
+    // });
+    navigation.navigate('VISUALIZE', {params: final});
+    // dispatch(get3dDataThunk(formData)).then(data => {
+    //   if (data) {
+    //     Toast.show({
+    //       type: 'success',
+    //       position: 'top',
+    //       text1: `Data fetched`,
+    //       visibilityTime: 2000,
+    //     });
+    //   }
+    // });
+  };
   const finalObject = (input, containerData) => {
-    // Initialize the output object
+    // Initialize the output objectr
     const output = {
       numTypes: input.length,
-      totalContainers: containerData.length,
+      totalContainers: 0,
       sumContainers: 0,
     };
 
@@ -53,6 +72,7 @@ const OrderScreen = ({route, navigation}) => {
     });
 
     Object.keys(containerData).forEach((ele, ind) => {
+      output['totalContainers']++;
       output[`containerType${ind}`] = ele;
       output[`numContainers${ind}`] = containerData[ele];
       output['sumContainers'] += parseInt(containerData[ele]);
@@ -72,6 +92,7 @@ const OrderScreen = ({route, navigation}) => {
         let skuArray = [];
         skuArray = Object.values(orderData).flat();
         const final = finalObject(skuArray, result);
+        setFinal(final);
       }
     });
   }, []);
@@ -120,7 +141,7 @@ const OrderScreen = ({route, navigation}) => {
         text={'visualize'}
         buttonStyle={{width: '40%', alignSelf: 'center'}}
         textStyle={{color: colors.white}}
-        onPress={() => navigation.navigate('VISUALIZE')}
+        onPress={get3dData}
       />
     </View>
   );

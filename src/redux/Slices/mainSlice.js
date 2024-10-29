@@ -57,6 +57,33 @@ export const getContainerThunk = createAsyncThunk(
     }
   },
 );
+export const get3dDataThunk = createAsyncThunk(
+  '/freeOutputJson',
+  async data => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const res = await axios.post(`${BASE_URL}/freeOutputJson`, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(res.data.container_inf);
+
+      await AsyncStorage.setItem(
+        'threed_paths',
+        JSON.stringify(res.data?.threed_paths),
+      );
+      await AsyncStorage.setItem(
+        'container_inf',
+        JSON.stringify(res.data?.container_inf),
+      );
+      return res.data;
+    } catch (error) {
+      return error.response.data;
+    }
+  },
+);
 
 const initialState = {
   loading: false,
@@ -174,6 +201,33 @@ const mainSlice = createSlice({
       })
       .addCase(getContainerThunk.rejected, (state, action) => {
         state.status.getOrderThunk = ERROR;
+        state.loading = false;
+        state.errorData.message = action.error.message;
+      })
+      //get3dDataThunk===================================================================================
+      .addCase(get3dDataThunk.pending, (state, {payload}) => {
+        state.loading = true;
+      })
+      .addCase(get3dDataThunk.fulfilled, (state, {payload}) => {
+        switch (Object.keys(payload)?.[0]) {
+          case SUCCESS:
+            state.successMsg = '';
+            state.loading = false;
+            state.successMsg = payload[SUCCESS]?.message;
+            state.errorData.message = '';
+            break;
+          case ERROR:
+            state.errorData.message = '';
+            state.loading = false;
+            state.errorData.message = payload[ERROR];
+            state.successMsg = '';
+            break;
+          default:
+            break;
+        }
+      })
+      .addCase(get3dDataThunk.rejected, (state, action) => {
+        state.status.get3dDataThunk = ERROR;
         state.loading = false;
         state.errorData.message = action.error.message;
       });
